@@ -1,0 +1,23 @@
+void Json::praseToMap()
+{	
+	std::map<std::string, std::string> inner_map; //result is the outer map
+	std::string current_main_key;
+	int this_position;
+	int next_postion;
+	int third_position; 
+
+	for (int i = 0; i < Json::praser_character_result.size(); i++) {
+		this_position = i;
+		next_postion = i + 1;
+		third_position = i + 2;
+
+		if (Json::praser_token_result[this_position] == "KEY" && Json::praser_token_result[next_postion] == "DEFIND_VALUE" && Json::praser_token_result[third_position] == "OPEN_BRAKET") {
+			current_main_key = praser_character_result[this_position];
+			inner_map.clear();
+		} else if (Json::praser_token_result[this_position] == "KEY" && Json::praser_token_result[next_postion] == "DEFIND_VALUE" && Json::praser_token_result[third_position] == "VALUE") {
+			inner_map[praser_character_result[this_position]] = praser_character_result[third_position]; //Key : Value
+		}
+		
+		Json::result[current_main_key] = inner_map;
+	}
+}
