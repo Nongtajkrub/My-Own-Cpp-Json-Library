@@ -27,6 +27,21 @@ void Json::loadFile()
 			Json::file_info.push_back(line);
 		}
 	}
+
+	file.close();
+}
+
+void Json::writeFile()
+{
+	std::ofstream file(Json::file_name);
+	
+	if (!file.is_open()) {
+		std::cout << "File fail to open!" << std::endl;
+	} else {
+		file << Json::file_write_data;	
+	}
+
+	file.close();
 }
 
 void Json::praseFileContent()
@@ -112,8 +127,7 @@ void Json::praseRemoveDoubleQuote()
 	}
 }
 
-std::string Json::call(std::vector<std::string> path_to_element) {
-	std::string no_result;
+std::string* Json::call(std::vector<std::string> path_to_element) {
 	int current_index;
 	int this_position;
 	int next_postion;
@@ -126,15 +140,16 @@ std::string Json::call(std::vector<std::string> path_to_element) {
 			next_postion = i + 1;
 			third_position = i + 2;
 
-			if (praser_token_result[this_position] == KEY && praser_character_result[this_position] == path) {
-				if (praser_token_result[next_postion] == DEFIND_VALUE &&  praser_token_result[third_position] == OPEN_BRAKET) {
+			if (Json::praser_token_result[this_position] == KEY && Json::praser_character_result[this_position] == path) {
+				if (Json::praser_token_result[next_postion] == DEFIND_VALUE &&  Json::praser_token_result[third_position] == OPEN_BRAKET) {
 					current_index = i;
-				} else if (praser_token_result[this_position] == KEY && praser_character_result[this_position] == path && praser_token_result[next_postion] == DEFIND_VALUE && praser_token_result[third_position] == VALUE) {
-					return praser_character_result[third_position];
+				} else if (Json::praser_token_result[this_position] == KEY && Json::praser_character_result[this_position] == path && Json::praser_token_result[next_postion] == DEFIND_VALUE && Json::praser_token_result[third_position] == VALUE) {
+					return &Json::praser_character_result[third_position];
 				}
 			}
 		}
 	}
 
-	return no_result;
+	std::cout << "Error json.call the value you are trying to find cant be found return a nullptr" << std::endl;
+	return nullptr;
 }

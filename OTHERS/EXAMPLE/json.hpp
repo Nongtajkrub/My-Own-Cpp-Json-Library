@@ -22,6 +22,7 @@ class Json {
 
 	private:
 		std::string file_name;
+		std::string file_write_data;
 		std::vector<std::string> file_info;
 		std::vector<std::string> praser_character_result;
 		std::vector<TokenType> praser_token_result;
@@ -37,11 +38,12 @@ class Json {
 		};
 
 	public:
-		std::string call(std::vector<std::string> path_to_element);
+		std::string* call(std::vector<std::string> path_to_element);
 
 	private:
 		void loadJson();
 		void loadFile();
+		void writeFile();
 		void praseFileContent();
 		void praseToTokens();
 		void praserErrorHandle();
