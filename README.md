@@ -3,7 +3,7 @@
 
  Here are some example code for using this Json loader.
 
-<pre>
+```cpp
 #include <iostream>
 #include "json.hpp"
 
@@ -15,13 +15,27 @@ int main()
 
 	return 0;
 }
-</pre>
+```
+
 *This code wont work this it just an example*
 
 1. First intilize the Json object and the file name as an parameter  
 2. Second use the json.call function to get the value from a certain key in the Json file
+3. Build the code
 
-This version of the loader will only work with key that is a string and value that is a string  
-They are example code in the OTHERS/EXAMPLE file
+```
+g++ json.cpp your_other_file.cpp -o your_.exe_file_name
+```
 
---MORE UPDATAE AND INFO COMMING SOON--
+4. Run the code
+
+```
+./your_.exe_file_name
+```
+_The current version of the loader will only work with key that is a string and value that is a string_    
+_They are example code in the OTHERS/EXAMPLE file_
+
+
+**NOT RECOMMENDED FOR PUBLIC USE THIS IS JUST A WAY TO SHOW WHAT I AM DOING**
+
+**--MORE UPDATAE AND INFO COMMING SOON--**
