@@ -1,6 +1,8 @@
 # My-Own-Cpp-Json-Loader 0.1 VERSION
  **This is my own Json loader it is for loading json file for reading.**
 
+You can download the file in the release page this guide is for the version 0.1
+
  Here are some example code for using this Json loader.
 
 ```cpp
