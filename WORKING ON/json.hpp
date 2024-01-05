@@ -18,7 +18,6 @@ class Json {
 		{
 			Json::file_name = file_name;
 			Json::loadJson();
-			Json::praser_character_result_copy = Json::praser_character_result;
 		}
 
 	private:
@@ -55,7 +54,10 @@ class Json {
 		void praserErrorHandle();
 		void praseRemoveDoubleQuote();
 
+		void clearFile();
 		void formatAddDoubleQuote();
-		void formatForWritingToFile();
 		void formatAddComma();
+		void formatToOneLine();
+		void formatAddTab();	
+		void formatForWritingToFile();
 };

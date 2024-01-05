@@ -12,14 +12,18 @@ void Json::loadJson()
 	Json::loadFile(); //Load the file info
 	Json::praseFileContent(); //Prase the file into a vector of string
 	Json::praseToTokens(); //Prase the vector to a vector of token
-	Json::praserErrorHandle(); //Error checking
+	//Json::praserErrorHandle(); //Error checking
 	Json::praseRemoveDoubleQuote(); //Removing the double quote so the data can be use
 }
 
 void Json::writeJson() {
-	Json::formatAddDoubleQuote();
-	Json::formatForWritingToFile(); //Format to the correct format before sending it back to the json file
-	//Json::writeFile();
+	Json::praser_character_result_copy = Json::praser_character_result; //Copy the praser_character_result so we dont change the old vector
+	Json::formatAddDoubleQuote(); //Add double quote the the word to make it string for example (test -> "test")
+	Json::formatAddComma(); //Add comma on line that need it for example ("name": "Taj", "age": "14")
+	Json::formatToOneLine(); //Format code that need to be in one line to one line
+	Json::formatAddTab(); //Add tab to the line that needed it for example ("test":\n{\n"name": "taj\n"} -> "test":\n{\n	"name":"Taj"\n})
+	Json::formatForWritingToFile(); //Add the result to the vector an ignoring some uneeded value
+	Json::writeFile(); //Write to the fil
 }
 
 void Json::loadFile()
@@ -173,7 +177,7 @@ void Json::formatAddDoubleQuote()
 	}
 }
 
-void Json::formatForWritingToFile()
+void Json::formatAddComma()
 {
 	int this_position;
 	int next_postion;
@@ -184,20 +188,45 @@ void Json::formatForWritingToFile()
 		next_postion = i + 1;
 		third_position = i +2;
 
-		if (praser_token_result[this_position] == VALUE && praser_token_result[next_postion] == KEY) {
-			std::cout << "FIRST at: " << praser_character_result_copy[this_position] << std::endl;
-			praser_character_result_copy[this_position].insert(praser_character_result_copy[this_position].size(), ",");
-			std::cout << "Insert to: " << praser_character_result_copy[this_position] << std::endl;
-		} else if (praser_token_result[this_position] == VALUE && praser_token_result[next_postion] == CLOSE_BRAKET && praser_token_result[third_position] != CLOSE_BRAKET) {
-			praser_character_result_copy[next_postion].insert(praser_character_result_copy[next_postion].size(), ",");
+		if (Json::praser_token_result[this_position] == VALUE && Json::praser_token_result[next_postion] == KEY) {
+			Json::praser_character_result_copy[this_position].insert(Json::praser_character_result_copy[this_position].size(), ",");
+		} else if (Json::praser_token_result[this_position] == VALUE && Json::praser_token_result[next_postion] == CLOSE_BRAKET && Json::praser_token_result[third_position] != CLOSE_BRAKET) {
+			Json::praser_character_result_copy[next_postion].insert(Json::praser_character_result_copy[next_postion].size(), ",");
 		}
+	}
+}
 
-		if (praser_token_result[this_position] == KEY && praser_token_result[next_postion] == DEFIND_VALUE) {
-			Json::praser_character_result_copy[this_position] += ":";
+void Json::formatToOneLine()
+{
+	int this_position;
+	int next_postion;
+	int third_position;
+
+	for (int i = 1; i < praser_character_result_copy.size() - 1; i++) {
+			this_position = i;
+			next_postion = i + 1;
+			third_position = i + 2;
+
+			if (praser_token_result[this_position] == KEY && praser_token_result[next_postion] == DEFIND_VALUE) {
+				Json::praser_character_result_copy[this_position] += ":";
 			if (praser_token_result[third_position] == VALUE) {
 				Json::praser_character_result_copy[this_position] += Json::praser_character_result_copy[third_position];
 			}
 		}
+	}
+}
+
+void Json::formatAddTab()
+{
+	int this_position;
+	int next_postion;
+	int third_position;
+
+	for (int i = 1; i < praser_character_result_copy.size() - 1; i++) {
+		this_position = i;
+		next_postion = i + 1;
+		third_position = i + 2;
+		
 		Json::praser_character_result_copy[this_position] = "\t" + praser_character_result_copy[this_position];
 		if (praser_token_result[this_position] == OPEN_BRAKET) {
 			for (int j = next_postion; j < Json::praser_character_result_copy.size(); j++) {
@@ -213,14 +242,13 @@ void Json::formatForWritingToFile()
 			}
 		}
 	}
+}
 
+void Json::formatForWritingToFile()
+{
 	for (int i = 0; i < Json::praser_character_result_copy.size(); i++) {
 		if (praser_token_result[i] != DEFIND_VALUE && praser_token_result[i] != VALUE) {
 			Json::format_for_write_vector_result.push_back(Json::praser_character_result_copy[i]);
 		}
-	}
-
-	for (const std::string& element : Json::format_for_write_vector_result) {
-		std::cout << element << std::endl;
 	}
 }
