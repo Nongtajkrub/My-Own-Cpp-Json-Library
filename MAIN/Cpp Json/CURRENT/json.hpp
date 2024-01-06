@@ -1,3 +1,4 @@
+#include <cstddef>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -41,9 +42,16 @@ class Json {
 		std::vector<std::string> praser_character_result_copy;
 
 	public:
-		std::string* call(std::vector<std::string> path_to_element);
+		std::string* call(std::vector<std::string> path_to_elementi);
+		/*
+		The call function is use to call an element from a json file using multiple key this function take a 
+		vector that conatin keys to a specific value and a type s -> string, i -> int
+		*/
 
 		void writeJson();
+		/*
+		The writeJson function is use to write the json data back to the file
+		*/
 
 	private:
 		void loadJson();
@@ -54,9 +62,7 @@ class Json {
 		void praserErrorHandle();
 		void praseRemoveDoubleQuote();
 
-		void clearFile();
-		void formatAddDoubleQuote();
-		void formatAddComma();
+		void formatEscapeAndQuoteString();
 		void formatToOneLine();
 		void formatAddTab();	
 		void formatForWritingToFile();

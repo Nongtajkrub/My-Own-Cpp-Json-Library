@@ -1,4 +1,3 @@
-#include <cstddef>
 #include <iostream>
 #include <map>
 #include <stdexcept>
@@ -9,6 +8,7 @@
 
 void Json::loadJson()
 {
+	//Load json file
 	Json::loadFile(); //Load the file info
 	Json::praseFileContent(); //Prase the file into a vector of string
 	Json::praseToTokens(); //Prase the vector to a vector of token
@@ -17,9 +17,9 @@ void Json::loadJson()
 }
 
 void Json::writeJson() {
+	//Write json info back to json file
 	Json::praser_character_result_copy = Json::praser_character_result; //Copy the praser_character_result so we dont change the old vector
-	Json::formatAddDoubleQuote(); //Add double quote the the word to make it string for example (test -> "test")
-	Json::formatAddComma(); //Add comma on line that need it for example ("name": "Taj", "age": "14")
+	Json::formatEscapeAndQuoteString(); //Add double quote the the word to make it string for example (test -> "test") and add comma where it is needed for example ("test1":"1" "test2":"2" -> "test1":"1", "test2": "2")
 	Json::formatToOneLine(); //Format code that need to be in one line to one line
 	Json::formatAddTab(); //Add tab to the line that needed it for example ("test":\n{\n"name": "taj\n"} -> "test":\n{\n	"name":"Taj"\n})
 	Json::formatForWritingToFile(); //Add the result to the vector an ignoring some uneeded value
@@ -65,6 +65,8 @@ void Json::praseFileContent()
 	for (const std::string& element : Json::file_info) {
 		for (const char& character : element) {
 			try {
+				//Use the individula character as a key and check if the key exsit
+				//current_praser_character_value is use to assign a value using the character as a key if the key does not exsit that mean the character will be add to the temp_str
 				current_praser_character_value = Json::praser_character_data.at(character);
 				if (!temp_str.empty()) {
 					Json::praser_character_result.push_back(temp_str);
@@ -72,23 +74,25 @@ void Json::praseFileContent()
 				}
 				Json::praser_character_result.push_back(current_praser_character_value);
 			} catch (std::out_of_range) {
+				//The key does not exsit
 				switch (character) {
 				case '	':
 					break;
 				case ',':
-					if (!temp_str.empty()) {
+					if (!temp_str.empty() && temp_str[temp_str.size() - 1] == '\"') {
 						Json::praser_character_result.push_back(temp_str);
+						temp_str = "";
+					} else if (!temp_str.empty()) {
+						temp_str += ",";
 					}
-					temp_str = "";
+					break;
 				case ' ':
 					if (!temp_str.empty()) {
 						temp_str += " ";
 					}
 					break;
 				default:
-					if (character != ',') {
-						temp_str += character;
-					}
+					temp_str += character;
 					break;
 				}
 			}
@@ -100,11 +104,14 @@ void Json::praseToTokens()
 {
 	for (int i = 0; i < Json::praser_character_result.size(); i++) {
 		try {
+			//Look for the key using the element in praser_character_result
 			Json::praser_token_result.push_back(Json::praser_token_data.at(Json::praser_character_result[i]));		
 		} catch (const std::out_of_range& e) {
+			//the key does not exsit default to a VALUE
 			Json::praser_token_result.push_back(VALUE);
 		}
 		if (Json::praser_token_result[i] == DEFIND_VALUE) {
+			//Check is token suppose to be a KEY or a VALUE for example ("test":"1" test is a key and 1 is a value)
 			Json::praser_token_result[i - 1] = KEY;
 		}
 	}
@@ -112,20 +119,23 @@ void Json::praseToTokens()
 
 void Json::praserErrorHandle()
 {
-	int braket_counter;
+	int braket_counter; //Keep track of braket
 
 	braket_counter = 0;
 	for (int i = 0; i < Json::praser_character_result.size(); i++) {
+		//Count the bracket and make sure it is a even number
 		if (Json::praser_token_result[i] == OPEN_BRAKET || Json::praser_token_result[i] == CLOSE_BRAKET) {
 			braket_counter++;
 		}
 		if (Json::praser_token_result[i] == VALUE || Json::praser_token_result[i] == KEY) {
+			//Check if every key and value is a string
 			if (praser_character_result[i][0] != '"' || praser_character_result[i][praser_character_result[i].size() - 1] != '"') {
 				std::cout << "JSON: Key and Value error pls make sure all of the keys and values are string at: " << praser_character_result[i] << std::endl;
 			}	
 		}
 	}
 	if (braket_counter % 2 != 0) {
+		//If braket_counter is not an even number it mean that the bracker in the json file is wrong
 		std::cout << "JSON: Syntax error pls check your braket" << std::endl;
 	}
 }
@@ -133,9 +143,10 @@ void Json::praserErrorHandle()
 void Json::praseRemoveDoubleQuote()
 {
 	for (int i = 0; i < Json::praser_character_result.size(); i++) {
+		//Removing double quote from the praser_character_result so they wont be double quote when calling the value
 		if (Json::praser_token_result[i] == KEY || Json::praser_token_result[i] == VALUE) {
-			Json::praser_character_result[i].erase(0, 1);
-			Json::praser_character_result[i].erase(Json::praser_character_result[i].size() - 1, 1);
+			Json::praser_character_result[i].erase(0, 1); //Removing first double quote
+			Json::praser_character_result[i].erase(Json::praser_character_result[i].size() - 1, 1); //Removing second double quote at the end of the string
 		}
 	}
 }
@@ -146,47 +157,50 @@ std::string* Json::call(std::vector<std::string> path_to_element) {
 	int next_postion;
 	int third_position;
 
-	current_index = 0;
+	current_index = 0; //The varible that prevent us from going over the loop over and over (save performace)
 	for (const std::string& path : path_to_element) {
+		//Looping throught the path
 		for	(int i = current_index; i < praser_character_result.size(); i++) {
+			//Check if we are in the correct path
 			this_position = i;
 			next_postion = i + 1;
 			third_position = i + 2;
 
 			if (Json::praser_token_result[this_position] == KEY && Json::praser_character_result[this_position] == path) {
+				//If the key or the value is equal to path
 				if (Json::praser_token_result[next_postion] == DEFIND_VALUE &&  Json::praser_token_result[third_position] == OPEN_BRAKET) {
-					current_index = i;
-				} else if (Json::praser_token_result[this_position] == KEY && Json::praser_character_result[this_position] == path && Json::praser_token_result[next_postion] == DEFIND_VALUE && Json::praser_token_result[third_position] == VALUE) {
+					//Check if we need to go further or not
+					current_index = third_position + 1;
+					break;
+				} else if (Json::praser_token_result[next_postion] == DEFIND_VALUE && Json::praser_token_result[third_position] == VALUE) {
+					//If we dont need to go further return the value from the key
 					return &Json::praser_character_result[third_position];
 				}
 			}
 		}
 	}
 
+	//No value is found
 	std::cout << "Error json.call the value you are trying to find cant be found return a nullptr" << std::endl;
 	return nullptr;
 }
 
-void Json::formatAddDoubleQuote()
-{
-	for (int i = 0; i < Json::praser_character_result_copy.size(); i++) {
-		if (praser_token_result[i] == KEY || praser_token_result[i] == VALUE) {
-			praser_character_result_copy[i].insert(0, "\"");
-			praser_character_result_copy[i].insert(praser_character_result_copy[i].size(), "\"");
-		}
-	}
-}
-
-void Json::formatAddComma()
+void Json::formatEscapeAndQuoteString()
 {
 	int this_position;
 	int next_postion;
 	int third_position;
 
-	for (int i = 1; i < Json::praser_character_result_copy.size() - 1; i++) { //ignore the first and the last element in the vector
+	for (int i = 1; i < Json::praser_character_result_copy.size() - 1; i++) {
+		//Add back double quote and comma to prepare to write back to the file
 		this_position = i;
 		next_postion = i + 1;
 		third_position = i +2;
+
+		if (praser_token_result[i] == KEY || praser_token_result[i] == VALUE) {
+			praser_character_result_copy[i].insert(0, "\"");
+			praser_character_result_copy[i].insert(praser_character_result_copy[i].size(), "\"");
+		}
 
 		if (Json::praser_token_result[this_position] == VALUE && Json::praser_token_result[next_postion] == KEY) {
 			Json::praser_character_result_copy[this_position].insert(Json::praser_character_result_copy[this_position].size(), ",");
@@ -202,18 +216,33 @@ void Json::formatToOneLine()
 	int next_postion;
 	int third_position;
 
-	for (int i = 1; i < praser_character_result_copy.size() - 1; i++) {
-			this_position = i;
-			next_postion = i + 1;
-			third_position = i + 2;
+	for (int i = 1; i < praser_character_result_copy.size() - 1; i++) {	//ignore the first and the last element in the vector (ignore "{" and "}" at the start and the end of the json file)
+		/*
+		Format code that need to be in one line to one line
 
-			if (praser_token_result[this_position] == KEY && praser_token_result[next_postion] == DEFIND_VALUE) {
-				Json::praser_character_result_copy[this_position] += ":";
-			if (praser_token_result[third_position] == VALUE) {
-				Json::praser_character_result_copy[this_position] += Json::praser_character_result_copy[third_position];
-			}
+		In praser_character_result
+		
+		"test"
+		:
+		"1"
+
+		chang to
+
+		"test": "1"
+		*/
+		this_position = i;
+		next_postion = i + 1;
+		third_position = i + 2;
+
+		if (praser_token_result[this_position] == KEY && praser_token_result[next_postion] == DEFIND_VALUE) {
+			//Add ":" at the end of KEY that need it
+			Json::praser_character_result_copy[this_position] += ":";
+		if (praser_token_result[third_position] == VALUE) {
+			//If the KEY defind a VALUE add VALUE to the end as well for example ("test": -> "test":"1")
+			Json::praser_character_result_copy[this_position] += Json::praser_character_result_copy[third_position];
 		}
 	}
+}
 }
 
 void Json::formatAddTab()
@@ -222,21 +251,25 @@ void Json::formatAddTab()
 	int next_postion;
 	int third_position;
 
-	for (int i = 1; i < praser_character_result_copy.size() - 1; i++) {
+	for (int i = 1; i < praser_character_result_copy.size() - 1; i++) {	//ignore the first and the last element in the vector (ignore "{" and "}" at the start and the end of the json file)
+		//Add tab to line that need them for example ("test":"1" ->		"test":1) the white space is tab
 		this_position = i;
 		next_postion = i + 1;
 		third_position = i + 2;
 		
-		Json::praser_character_result_copy[this_position] = "\t" + praser_character_result_copy[this_position];
+		Json::praser_character_result_copy[this_position] = "\t" + praser_character_result_copy[this_position]; //Add thap to every line except for the first and last line																									
 		if (praser_token_result[this_position] == OPEN_BRAKET) {
+			//Add tab to section with open bracket add untill reach close braket
 			for (int j = next_postion; j < Json::praser_character_result_copy.size(); j++) {
 				this_position = j;
 				next_postion = j + 1;
 				third_position = j + 2;
 
 				if (praser_token_result[this_position] != CLOSE_BRAKET) {
+					//Add tab and stop when reach close braket
 					Json::praser_character_result_copy[this_position] = "\t" + Json::praser_character_result_copy[this_position];
 				} else {
+					//reach close braket
 					break;
 				}
 			}
@@ -247,6 +280,7 @@ void Json::formatAddTab()
 void Json::formatForWritingToFile()
 {
 	for (int i = 0; i < Json::praser_character_result_copy.size(); i++) {
+		//Add the element from the format vector(praser_character_result_copy) to the new one(format_for_write_vector_result) and ignore thing that does not need to be add(KEY, VALUE, DEFIND_VALUE) since those thing has already be turn into one line
 		if (praser_token_result[i] != DEFIND_VALUE && praser_token_result[i] != VALUE) {
 			Json::format_for_write_vector_result.push_back(Json::praser_character_result_copy[i]);
 		}
