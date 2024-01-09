@@ -1,3 +1,4 @@
+//Current problem writing to file I think because the if statedment due to the added VARSTR
 #include <iostream>
 #include <map>
 #include <stdexcept>
@@ -12,7 +13,6 @@ void Json::loadJson()
 	Json::loadFile(); //Load the file info
 	Json::praseFileContent(); //Prase the file into a vector of string
 	Json::praseToTokens(); //Prase the vector to a vector of token
-	Json::praserErrorHandle(); //Error checking
 	Json::praseRemoveDoubleQuote(); //Removing the double quote so the data can be use
 }
 
@@ -121,48 +121,6 @@ void Json::praseToTokens()
 	}
 }
 
-void Json::praserErrorHandle()
-{
-	int braket_counter; //Keep track of braket
-	int key_counter;
-	int value_counter;
-	int defind_value_counter;
-
-	braket_counter = 0;
-	key_counter = 0;
-	defind_value_counter = 0;
-	value_counter = 0;
-	for (int i = 0; i < Json::praser_token_result.size(); i++) {
-		switch (Json::praser_token_result[i]) {
-			case OPEN_BRAKET:
-			case CLOSE_BRAKET:
-				braket_counter++;
-				break;
-			case KEY:
-				key_counter++;
-				break;
-			case DEFIND_VALUE:
-				defind_value_counter++;
-				break;
-			case VALUE:
-			case VALUESTR:
-				value_counter++;
-				break;
-			default:
-				break;
-		}		
-	}
-
-	if (braket_counter % 2 != 0) {
-		//Braket counter is not even not throw braket error
-		std::cout << "JSON ERROR: (Syntax) Detected that the braket are not correct pls check the amount of braket you have in the json file and make sure all the scope are correctly separate" << std::endl;
-	}
-	if (key_counter != defind_value_counter) {
-		//The amount of key and the defind value character ":" are not the same
-		std::cout << "JSON ERROR: (Syntax) Detected that the amount of key and the defind value character \":\" are not the same amount pls make sure that all the key have the defind value character behind it" << std::endl;
-	}
-}
-
 void Json::praseRemoveDoubleQuote()
 {
 	for (int i = 0; i < Json::praser_character_result.size(); i++) {
@@ -195,7 +153,7 @@ std::string* Json::call(std::vector<std::string> path_to_element) {
 					//Check if we need to go further or not
 					current_index = third_position + 1;
 					break;
-				} else if (Json::praser_token_result[next_postion] == DEFIND_VALUE && Json::praser_token_result[third_position] == VALUE) {
+				} else if (Json::praser_token_result[next_postion] == DEFIND_VALUE && Json::praser_token_result[third_position] == VALUE || Json::praser_token_result[third_position] == VALUESTR) {
 					//If we dont need to go further return the value from the key
 					return &Json::praser_character_result[third_position];
 				}
@@ -221,7 +179,6 @@ void Json::formatEscapeAndQuoteString()
 		third_position = i +2;
 
 		if (praser_token_result[i] == KEY || praser_token_result[i] == VALUESTR) {
-			std::cout << "Converting " << Json::praser_character_result[i] << " " << Json::praser_token_result[i] << std::endl;
 			praser_character_result_copy[i].insert(0, "\"");
 			praser_character_result_copy[i].insert(praser_character_result_copy[i].size(), "\"");
 		}
@@ -239,7 +196,6 @@ void Json::formatToOneLine()
 	int this_position;
 	int next_postion;
 	int third_position;
-
 	for (int i = 1; i < praser_character_result_copy.size() - 1; i++) {	//ignore the first and the last element in the vector (ignore "{" and "}" at the start and the end of the json file)
 		/*
 		Format code that need to be in one line to one line
@@ -258,10 +214,11 @@ void Json::formatToOneLine()
 		next_postion = i + 1;
 		third_position = i + 2;
 
+
 		if (praser_token_result[this_position] == KEY && praser_token_result[next_postion] == DEFIND_VALUE) {
 			//Add ":" at the end of KEY that need it
 			Json::praser_character_result_copy[this_position] += ":";
-		if (praser_token_result[third_position] == VALUE || praser_token_result[this_position] == VALUESTR) {
+		if (praser_token_result[third_position] == VALUE || praser_token_result[third_position] == VALUESTR) {
 			//If the KEY defind a VALUE add VALUE to the end as well for example ("test": -> "test":"1")
 			Json::praser_character_result_copy[this_position] += Json::praser_character_result_copy[third_position];
 		}

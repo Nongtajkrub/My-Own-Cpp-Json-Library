@@ -61,7 +61,6 @@ class Json {
 		void writeFile();
 		void praseFileContent();
 		void praseToTokens();
-		void praserErrorHandle();
 		void praseRemoveDoubleQuote();
 
 		void formatEscapeAndQuoteString();
