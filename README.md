@@ -191,3 +191,25 @@ int main()
     return 0;
 }
 ```
+
+## DRAWBACKS
+
+The current draw back for the version 0.30 that I know about
+1. Your Json file need to have the basic first before doing anything to the file
+```json
+
+```
+Emty file like this wont work
+```json
+{
+
+}
+```
+```json
+{
+}
+```
+```json
+{}
+```
+These will work
