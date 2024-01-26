@@ -4,7 +4,7 @@
 
 ## INFO
 
-Hello! This is my own C++ library designed for interacting with JSON files. It simplify tasks such as reading, writing, and manipulating JSON data. The current version is 0.30, and I have been developing this library for almost three months now. The latest release was on January 20, 2024. There are numerous planned features for the future, including the ability to map JSON data into a structure resembling a map, enabling seamless calls. Additionally, performance updates are in the pipeline.
+Hello! This is my own C++ library designed for interacting with JSON files. It simplify tasks such as reading, writing, and manipulating JSON data. The current version is 0.35, and I have been developing this library for almost three months now. The latest release was on January 26, 2024. There are numerous planned features for the future, including the ability to map JSON data into a structure resembling a map, enabling seamless calls. Additionally, performance updates are in the pipeline.
 
 You can contact me on my email sunanborthwic@gmail.com or on my [instragram](https://www.instagram.com/nongtajkrub/)
 
