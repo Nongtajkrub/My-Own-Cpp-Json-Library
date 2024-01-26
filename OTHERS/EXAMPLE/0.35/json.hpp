@@ -127,9 +127,14 @@ class Json {
 	
 		void changeFileName(std::string new_file_name, bool clear_old_data);
 		/*
-		The changeFileName function is use to change the name of the file you want your Json object to interact with but we recommend 
-		you create a new Json object for a new file instead of using this function. This function take in a new_file_name which is a
-		string the and wheter you want to clear old data in the old Json file or not.
+		The changeFileName function is designed for altering the file name associated with your Json object.
+		It enables you to specify a new file name as a string and determine whether to clear the existing data
+		in the program data or not. However, it is recommended to create a new Json object for a different file
+		rather than relying on this function.
+
+		Parameters:
+		- The first argument is the new file name you want your Json object to interact with provide as a string.
+		- The second argument is a boolean flag indicating whether you wish to clear the existing program data (true for clearing, false otherwise).
 		*/
 
 		int convertTypeInt(std::string original_value);
