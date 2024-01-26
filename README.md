@@ -1,4 +1,4 @@
-# My-Own-Cpp-Json-Loader 0.30 VERSION
+# My-Own-Cpp-Json-Loader 0.35 VERSION
 
 ![Image of JSON text](/assets/images/Json_main_title.png)
 
@@ -59,6 +59,17 @@ int main()
 ```
 
 The clearFile function, when called, empties the content of the JSON file it is associated with. This function does not require any arguments.
+
+### The clearData function
+```cpp
+int main()
+{
+	Json json("your_json_file_name");
+	json.clearFile();
+}
+```
+
+This function is use to clear data out of the program but not the Json file.
 
 ### The add function
 ```cpp
@@ -128,31 +139,122 @@ int main()
 	json.convertStringToJson(string_to_convert);
 }
 ```
--You can also write the data to the json file by using the json.file_name variable and assigning it to the name of your Json file-
+You can also write the data to the Json file by using the json.changeFileName function to change the name of the Json file.
 ```cpp
 int main()
 {
 	std::string string_to_conver = "{\"test\": 10}"
 	Json json("");
 	json.convertStringToJson(string_to_convert);
-	json.file_name = "your_json_file_name";
+	json.changeFileName("test.json");
 	json.writeJson(true);
 }
 ```
-### The object.file_name variable
+### The changeFileName function
 ```cpp
 int main()
 {
-	Json json("");
-	json.file_name = "your_json_file_name";
+	Json json("your_json_file_name");
+	json.changeFileName(new_file_name, do_you_want_to_clea_the_old_data);
 }
 ```
 
-The object.file_name is utilized to specify or change the file name to which your Json object is dedicated. This allows the program to associate the Json object with a particular JSON file for reading, writing, and manipulation operations.
+The changeFileName function is designed for altering the file name associated with your Json object. However, it is recommended to create a new Json object for a different file rather than using this function. It take in 2 arguments:
+- The first argument is the new file name you want your Json object to interact with provide as a string.
+- The second argument is a boolean flag indicating whether you wish to clear the existing program data (true for clearing, false otherwise).
+
+### The convertTypeInt function
+```cpp
+int main()
+{
+	Json json("your_json_file_name");
+	json.convertTypeInt(the_value_you_want_to_convert_into_an_int_after_calling_it);
+}
+```
+When utilizing the call function, the returned value is always in string format. To convert this string representation to an integer, you can use the convertTypeInt function. It takes a single argument, which is the original string you want you change to an int.		 
+		
+-example-
+```cpp
+int main()
+{
+	Json json("your_json_file_name");
+	int result = convertTypeInt(json.call({"and_int_value"}));
+}
+```
+
+Internally, this function simply uses std::stoi for the conversion.
+
+### The convertTypeArrayInt function adn The convertTypeArrayString function
+```cpp
+int main()
+{
+	Json json("your_json_file_name");
+	json.convertTypeArrayInt(the_string_you_want_to_convert_to_a_vector_that_contain_int);
+	json.convertTypeArrayString(the_string_you_want_to_convert_to_a_vector_that_contain_string);
+}
+```
+
+When utilizing the call function, it returns values as strings. To convert these string representations of arrays (containing either integers or strings) into actual vector objects, two functions are provided. The convertTypeArrayInt function is used for converting arrays containing integers returned as strings into vectors of integers. Similarly, the convertTypeArrayString function is employed for converting arrays containing strings returned as strings into vectors of strings. These functions take a single argument, which is the original string you want to convert to a vector . It's important to note that these functions cannot be used with arrays containing a mixture of integers and strings.
+
+-example-
+```cpp
+int main()
+{
+	Json json("your_json_file_name");
+	json.convertTypeArrayInt(json.call({"array_of_ints"}));
+	json.convertTypeArrayInt(json.call({"array_of_strings"}));
+}
+```
+
+### The is_true function
+```cpp
+int main()
+{
+	Json json("your_json_file_name");
+	json.is_true({"path_to_your_value"});
+}
+```
+
+The is_true function is use to check if a certain value the a Json file is true. It take in a single argument which is the path to your value (the "path to your value" is explain more in the document section of the call function).
+
+### The items function
+```cpp
+int main()
+{
+	Json json("your_json_file_name");
+	json.items();
+}
+```
+
+Use to get all the item in the Json file (The key and the value) and map it together.
+
+### The values funcion
+```cpp
+int main()
+{
+	Json json("your_json_file_name");
+	json.values();
+}
+```
+
+Use to get all the value in the Json file.
+
+### The keys function
+```cpp
+int main()
+{
+	Json json("your_json_file_name");
+	json.keys();
+}
+```
+
+Use the get all the key in the Json file.
 
 ## EXAMPLE CODE
 
 You can also check out the EXMAPLE CODE in more detail in the folder OTHERS -> EXAMPLE -> 0.30 
+
+### main.cpp
 
 ```cpp
 #include <iostream>
@@ -160,62 +262,110 @@ You can also check out the EXMAPLE CODE in more detail in the folder OTHERS -> E
 
 int main()
 {
-    // Create a string containing JSON data to be converted
-    std::string json_test = "{\"cat\": 10}";
+	// Create a string containing JSON data to be converted
+	std::string json_test = "{\"cat\": 10}";
 
-    // Create a Json object with an empty file name
-    Json json("");
+	// Create a Json object with an empty file name
+	Json json("");
 
-    // Convert the string into Json using convertStringToJson function
-    json.convertStringToJson(json_test);
+	// Convert the string into Json using convertStringToJson function
+	json.convertStringToJson(json_test);
 
-    // Call the "cat" key and print its value to demonstrate retrieval
-    std::cout << json.call({"cat"}) << std::endl;
+	// Call the "cat" key and print its value to demonstrate retrieval
+	std::cout << json.call({"cat"}) << std::endl;
 
-    // Change the value of the "cat" key to 15 as an integer
-    // The two 'false' parameters indicate that the change won't be immediately written to a file,
-    // and the formatting won't be applied when updating the file
-    json.change({"cat"}, "15", 'i', false, false);
+	// Change the value of the "cat" key to 15 as an integer
+	// The two 'false' parameters indicate that the change won't be immediately written to a file,
+	// and the formatting won't be applied when updating the file
+	json.change({"cat"}, "15", 'i', false, false);
 
-    // Print the updated value of the "cat" key
-    std::cout << json.call({"cat"}) << std::endl;
+	// Print the updated value of the "cat" key
+	std::cout << json.call({"cat"}) << std::endl;
 
-    // Change the file name from no file to "test.json"
-    json.file_name = "test.json";
+	// Change the file name from no file to "test.json"
+	json.changeFileName("test.json", false);
 
-    // Write the JSON data to the file "test.json" and format it
-    json.writeJson(true);
+	// Write the JSON data to the file "test.json" and format it
+	json.writeJson(true);
 
-    // Show detailed information about the JSON object, including current keys and values
-    json.showData(true);
+    	// Show detailed information about the JSON object, including current keys and values
+    	json.showData(true);
 
-    // Clear the contents of the "test.json" file completely
-    json.clearFile();
+    	// All functions that work with reading data from a file also work with reading data from a string and converting it to JSON
+	
+    	//Second example
+	
+    	std::cout << "\nsecond example\n\n";
 
-    // All functions that work with reading data from a file also work with reading data from a string and converting it to JSON
+	// Create a Json object with the file name of Secondtest.json
+    	Json secondJson("Secondtest.json");
 
-    return 0;
+    	// Show his hobbies
+    	std::cout << secondJson.call({"name"}) << " hoobies is";
+    	// Convert a string that were return from json.call({"hoobies"}) to a vector.
+    	// Loop through it then print the value.
+    	// This will also work to convert a string to a vector that contain int using the convertTypeArrayInt function.
+    	for (const std::string& hobbie : secondJson.convertTypeArrayString(secondJson.call({"hobbies"}))) {
+        	std::cout << " " << hobbie;
+    	}
+    	std::cout << "." << std::endl;
+
+    	// Check if he a student using the json.is_true({"isStudent"}).
+    	if (secondJson.is_true({"isStudent"})) {
+        	// If he a student print "He is a student".
+        	std::cout << "He is a student." << std::endl;
+    	} else {
+        	// If he is not a student print "He is not a student".
+		std::cout << "He is not a student." << std::endl;
+    	}
+
+    	// Print his grade using the json.call({"grades", "math"})
+    	std::cout << "His math grade is " << secondJson.call({"grades", "math"}) << "." << std::endl;
+    	// Print his grade plus by 5 using the json.convertTypeInt(json.cal({"grades", "math"})) to convert from a stirng
+    	// that is return from the json.call function to an int. Then plus it by five.
+    	std::cout << "His math grade plus by five is " << secondJson.convertTypeInt(secondJson.call({"grades", "math"})) + 5 << "." << std::endl;
+
+    	return 0;
+}
+```
+
+### json.test
+Before the code is run.
+```json
+
+```
+After the code is run.
+```json
+{
+	"cat":15
+}
+```
+
+### Secondtest.json
+```json
+{
+  "name": "John Doe",
+  "age": 30,
+  "city": "Randomville",
+  "isStudent": true,
+  "grades": {
+    "math": 85,
+    "english": 78,
+    "history": 92
+  },
+  "hobbies": ["reading", "traveling", "coding"],
+  "address": {
+    "street": "123 Random Street",
+    "city": "Randomville",
+    "zipcode": "98765"
+  }
 }
 ```
 
 ## DRAWBACKS
 
 The current draw back for the version 0.30 that I know about
-1. Your Json file need to have the basic first before doing anything to the file
-```json
+1. When using the convertTypeArrayInt function and the convertTypeArrayString the array can only contain either a string or an int and not both.
+2. The convertTypeArrayInt function and the convertTypeArrayString can only take in array that conatian either a string or an int no any other datatype.
 
-```
-Emty file like this wont work
-```json
-{
-
-}
-```
-```json
-{
-}
-```
-```json
-{}
-```
-These will work
+This is all that I know for now!
