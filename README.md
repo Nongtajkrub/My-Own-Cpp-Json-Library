@@ -76,7 +76,7 @@ This function is use to clear data out of the program but not the Json file.
 int main()
 {
 	Json json("your_json_file_name");
-	json.add({"path_to_your_value_using_key"}, "the_name_of_your_key", "the_value_of_your_key", 'data_type_of_your_value');
+	json.add({"path_to_your_value_using_key", "the_name_of_your_key", "the_value_of_your_key", 'data_type_of_your_value'});
 }
 ```
 
