@@ -252,7 +252,7 @@ Use the get all the key in the Json file.
 
 ## EXAMPLE CODE
 
-You can also check out the EXMAPLE CODE in more detail in the folder OTHERS -> EXAMPLE -> 0.30 
+You can also check out the EXMAPLE CODE in more detail in the folder OTHERS -> EXAMPLE -> 0.35
 
 ### main.cpp
 
