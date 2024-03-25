@@ -364,7 +364,7 @@ After the code is run.
 
 ## DRAWBACKS
 
-The current draw back for the version 0.30 that I know about
+The current draw back for the version 0.35 that I know about
 1. When using the convertTypeArrayInt function and the convertTypeArrayString the array can only contain either a string or an int and not both.
 2. The convertTypeArrayInt function and the convertTypeArrayString can only take in array that conatian either a string or an int no any other datatype.
 
