@@ -65,7 +65,7 @@ The clearFile function, when called, empties the content of the JSON file it is 
 int main()
 {
 	Json json("your_json_file_name");
-	json.clearFile();
+	json.clearData();
 }
 ```
 
