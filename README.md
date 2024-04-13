@@ -184,7 +184,7 @@ int main()
 
 Internally, this function simply uses std::stoi for the conversion.
 
-### The convertTypeArrayInt function adn The convertTypeArrayString function
+### The convertTypeArrayInt function and The convertTypeArrayString function
 ```cpp
 int main()
 {
