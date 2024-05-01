@@ -620,7 +620,7 @@ std::vector<std::string> Json::keys()
 {	
 	std::vector<std::string> result;
 	int this_position;
-	
+		
 	for (int i = 0; i < Json::praser_token_result.size(); i++) {
 		this_position = i;
 
